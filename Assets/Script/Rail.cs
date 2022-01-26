@@ -14,7 +14,7 @@ public class Rail : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        foreach(Transform child in transform)
+        foreach (Transform child in transform)
         {
             nodes.Add(child);
         }
@@ -28,23 +28,23 @@ public class Rail : MonoBehaviour
     private void OnDrawGizmos()
     {
         this.DrawGizmos(Color.green);
-        this.Draw(GetPosition(distance));
+        //this.Draw(GetPosition(distance));
     }
 
     public void DrawGizmos(Color color)
     {
         Gizmos.color = color;
-        for(int i = 0; i<nodes.Count -1; i++)
+        for (int i = 0; i < nodes.Count - 1; i++)
         {
             Gizmos.DrawSphere(nodes[i].position, 0.25f);
-            Gizmos.DrawLine(nodes[i].position, nodes[i +1].position);
+            Gizmos.DrawLine(nodes[i].position, nodes[i + 1].position);
         }
         Gizmos.DrawSphere(nodes[nodes.Count - 1].position, 0.25f);
-        if(isLoop)
+        if (isLoop)
         {
             Gizmos.DrawLine(nodes[nodes.Count - 1].position, nodes[0].position);
         }
-        
+
     }
 
 
@@ -57,11 +57,11 @@ public class Rail : MonoBehaviour
     public float GetLength()
     {
         float length = 0;
-        for(int i = 0; i < nodes.Count -1; i++)
+        for (int i = 0; i < nodes.Count - 1; i++)
         {
             length += Vector3.Distance(nodes[i].position, nodes[i + 1].position);
         }
-        if(isLoop)
+        if (isLoop)
         {
             length += Vector3.Distance(nodes[nodes.Count - 1].position, nodes[0].position);
         }
@@ -77,30 +77,32 @@ public class Rail : MonoBehaviour
         Vector3 direction = Vector3.zero;
         int i = 0;
         distance = distance % length;
-        while (i < nodes.Count -1 && !found)
+
+        while (i < nodes.Count - 1 && !found)
         {
-            
+
             if (distance < distanceActuelle + Vector3.Distance(nodes[i].position, nodes[i + 1].position))
             {
-                direction = nodes[i + 1].position - nodes[i].position;
-                position = direction + direction.normalized * (distance - distanceActuelle);
+                direction = (nodes[i + 1].position - nodes[i].position).normalized;
+                position = direction * (distance - distanceActuelle);
+                position += nodes[i].position;
                 found = true;
             }
-            
+
             distanceActuelle += Vector3.Distance(nodes[i].position, nodes[i + 1].position);
             i++;
 
-            if(i == nodes.Count && isLoop && !found)
+            if (i == nodes.Count - 1 && isLoop && !found)
             {
                 if (distance < distanceActuelle + Vector3.Distance(nodes[i].position, nodes[0].position))
                 {
-                    direction = nodes[0].position - nodes[i].position;
-                    position = direction + direction.normalized * (distance - distanceActuelle);
+                    direction = (nodes[0].position - nodes[i].position).normalized;
+                    position = direction * (distance - distanceActuelle);
+                    position += nodes[i].position;
                     found = true;
                 }
             }
         }
         return position;
     }
-
 }

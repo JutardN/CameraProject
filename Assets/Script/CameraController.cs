@@ -27,24 +27,6 @@ public class CameraController : MonoBehaviour
     }
     private void Start()
     {
-
-        //ApplyConfiguration(camera, currentConfig);
-
-        //////////////// Exercice 2 ////////////////////
-        //FixedView[] view = GameObject.FindObjectsOfType<FixedView>();
-
-
-        ////////////////Exercice 4 ///////////////////
-        //FixedFollowView[] view = GameObject.FindObjectsOfType<FixedFollowView>();
-
-        //for (int i = 0; i < view.Length; i++)
-        //{
-        //    AddView(view[i]);
-        //}
-
-
-
-        
     }
 
 
