@@ -9,10 +9,8 @@ public abstract class AView : MonoBehaviour
 
     private void Start()
     {
-        if (isActiveOnStart)
-        {
-            SetActive(false);
-        }
+       
+            SetActive(isActiveOnStart);
     }
 
     public virtual CameraConfiguration GetConfiguration()
@@ -22,7 +20,14 @@ public abstract class AView : MonoBehaviour
 
     void SetActive(bool isActive)
     {
-        isActiveOnStart = isActive;
+        if(isActive)
+        {
+            CameraController.instance.AddView(this);
+        }
+        else
+        {
+            CameraController.instance.RemoveView(this);
+        }
     }
 
 }

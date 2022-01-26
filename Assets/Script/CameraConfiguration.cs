@@ -22,7 +22,6 @@ public class CameraConfiguration : MonoBehaviour
         Quaternion temp = Quaternion.Euler(yaw, pitch, roll);
         return temp;
     }
-
     public Vector3 GetPosition()
     {
         Vector3 offset = GetRotation() * (Vector3.back * distance);

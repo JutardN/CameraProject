@@ -7,6 +7,12 @@ public class CameraController : MonoBehaviour
     public Camera camera;
     public static CameraController instance = null;
     public List<AView> activeViews;
+    public CameraConfiguration currentConfig;
+    public CameraConfiguration targetConfig;
+    public float speed;
+
+
+    float timer = 0;
 
     private void Awake()
     {
@@ -21,11 +27,24 @@ public class CameraController : MonoBehaviour
     }
     private void Start()
     {
-        FixedView[] view = GameObject.FindObjectsOfType<FixedView>();
-        for(int i = 0; i < view.Length; i++)
-        {
-            AddView(view[i]);
-        }
+
+        //ApplyConfiguration(camera, currentConfig);
+
+        //////////////// Exercice 2 ////////////////////
+        //FixedView[] view = GameObject.FindObjectsOfType<FixedView>();
+
+
+        ////////////////Exercice 4 ///////////////////
+        //FixedFollowView[] view = GameObject.FindObjectsOfType<FixedFollowView>();
+
+        //for (int i = 0; i < view.Length; i++)
+        //{
+        //    AddView(view[i]);
+        //}
+
+
+
+        
     }
 
 
@@ -37,19 +56,25 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        camera.transform.rotation = new CameraConfiguration(ComputeAverageYaw(),AveragePitch(),AverageRoll(),AveragePivot(),AverageDistance(),AverageFov()).GetRotation();
-        camera.transform.position = new CameraConfiguration(ComputeAverageYaw(), AveragePitch(), AverageRoll(), AveragePivot(), AverageDistance(), AverageFov()).GetPosition();
+
+        //////////////////// Exercice 3 ////////////////
+        //CameraBlend(currentConfig);
+
+        ////////////////// Exercice 2 //////////////////
+        CameraConfiguration tempConfig = new CameraConfiguration(ComputeAverageYaw(), AveragePitch(), AverageRoll(), AveragePivot(), AverageDistance(), AverageFov());
+        camera.transform.rotation = tempConfig.GetRotation();
+        camera.transform.position = tempConfig.GetPosition();
     }
     private void OnDrawGizmos()
     {
         new CameraConfiguration(ComputeAverageYaw(), AveragePitch(), AverageRoll(), AveragePivot(), AverageDistance(), AverageFov()).DrawGizmos(Color.magenta);
     }
 
-    void AddView(AView view)
+    public void AddView(AView view)
     {
         activeViews.Add(view);
     }
-    void RemoveView(AView view)
+    public void RemoveView(AView view)
     {
         activeViews.Remove(view);
     }
@@ -67,7 +92,7 @@ public class CameraController : MonoBehaviour
     public float AveragePitch()
     {
         float pitch = 0;
-        float weight= 0;
+        float weight = 0;
         foreach (AView config in activeViews)
         {
             pitch += config.GetConfiguration().pitch * config.weight;
@@ -124,5 +149,25 @@ public class CameraController : MonoBehaviour
         return fov / weight;
     }
 
+    public void CameraBlend(CameraConfiguration blendConfiguration)
+    {
+
+        if (speed * Time.deltaTime < 1)
+        {
+            blendConfiguration.yaw = blendConfiguration.yaw + (targetConfig.yaw - blendConfiguration.yaw) * speed * Time.deltaTime;                   //(1 - timer) * currentConfig.yaw + timer * targetConfig.yaw;
+            blendConfiguration.pitch = blendConfiguration.pitch + (targetConfig.pitch - blendConfiguration.pitch) * speed * Time.deltaTime;                   //(1 - timer) * currentConfig.yaw + timer * targetConfig.yaw;
+            blendConfiguration.roll = blendConfiguration.roll + (targetConfig.roll - blendConfiguration.roll) * speed * Time.deltaTime;                   //(1 - timer) * currentConfig.yaw + timer * targetConfig.yaw;
+            blendConfiguration.distance = blendConfiguration.distance + (targetConfig.distance - blendConfiguration.distance) * speed * Time.deltaTime;                   //(1 - timer) * currentConfig.yaw + timer * targetConfig.yaw;
+            blendConfiguration.fov = blendConfiguration.fov + (targetConfig.fov - blendConfiguration.fov) * speed * Time.deltaTime;                   //(1 - timer) * currentConfig.yaw + timer * targetConfig.yaw;
+            blendConfiguration.pivot = blendConfiguration.pivot + (targetConfig.pivot - blendConfiguration.pivot) * speed * Time.deltaTime;                   //(1 - timer) * currentConfig.yaw + timer * targetConfig.yaw; 
+        }
+        else
+        {
+            blendConfiguration = targetConfig;
+        }
+
+        ApplyConfiguration(camera, blendConfiguration);
+
+    }
 
 }
