@@ -5,12 +5,14 @@ using UnityEngine;
 public abstract class AView : MonoBehaviour
 {
     public float weight;
-    public bool isActiveOnStart;
+
+    //////////////// EXERCICE 2 /////////////
+    //public bool isActiveOnStart;
 
     private void Start()
     {
-
-        SetActive(isActiveOnStart);
+        /////////////// EXERCICE 2 ////////////////
+        //SetActive(isActiveOnStart);
     }
 
     public virtual CameraConfiguration GetConfiguration()
@@ -18,8 +20,9 @@ public abstract class AView : MonoBehaviour
         return new CameraConfiguration(0, 0, 0, new Vector3(0, 0, 0), 0, 0);
     }
 
-    void SetActive(bool isActive)
+    public void SetActive(bool isActive)
     {
+        Debug.Log("tu rentres ?");
         if (isActive)
         {
             CameraController.instance.AddView(this);
@@ -28,5 +31,11 @@ public abstract class AView : MonoBehaviour
         {
             CameraController.instance.RemoveView(this);
         }
+    }
+
+    public virtual void OnDrawGizmos()
+    {
+        CameraConfiguration temp = GetConfiguration();
+        temp.DrawGizmos(Color.green);
     }
 }

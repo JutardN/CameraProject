@@ -22,7 +22,17 @@ public class DollyView : AView
         {
             hzt = Input.GetAxisRaw("Horizontal");
             distanceOnRail += Time.deltaTime * hzt * speed;
-            distanceOnRail = Mathf.Clamp(distanceOnRail, 0, Mathf.Infinity);
+            if (rail.isLoop)
+            {
+                while (distanceOnRail < 0)
+                {
+                    distanceOnRail += rail.GetLength();
+                }
+            }
+            else
+            {
+                distanceOnRail = Mathf.Clamp(distanceOnRail, 0, rail.GetLength());
+            }
             transform.position = rail.GetPosition(distanceOnRail);
         }
 
@@ -41,6 +51,7 @@ public class DollyView : AView
     private void OnDrawGizmos()
     {
         rail.Draw(rail.GetPosition(distanceOnRail));
+        base.OnDrawGizmos();
     }
     public override CameraConfiguration GetConfiguration()
     {

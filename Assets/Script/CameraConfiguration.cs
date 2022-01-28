@@ -19,7 +19,7 @@ public class CameraConfiguration : MonoBehaviour
 
     public Quaternion GetRotation()
     {
-        Quaternion temp = Quaternion.Euler(yaw, pitch, roll);
+        Quaternion temp = Quaternion.Euler(pitch, yaw, roll);
         return temp;
     }
     public Vector3 GetPosition()
@@ -34,7 +34,7 @@ public class CameraConfiguration : MonoBehaviour
         Vector3 position = GetPosition();
         Gizmos.DrawLine(pivot, position);
         Gizmos.matrix = Matrix4x4.TRS(position, GetRotation(), Vector3.one);
-        Gizmos.DrawFrustum(Vector3.zero, fov, 0.5f, 0f, Camera.main.aspect);
+        Gizmos.DrawFrustum(Vector3.zero, fov, 1f, 0f, Camera.main.aspect);
         Gizmos.matrix = Matrix4x4.identity;
     }
 }

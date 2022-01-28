@@ -12,6 +12,9 @@ public class CameraController : MonoBehaviour
     public float speed;
 
 
+    private bool isCutRequested;
+
+
     float timer = 0;
 
     private void Awake()
@@ -27,6 +30,7 @@ public class CameraController : MonoBehaviour
     }
     private void Start()
     {
+        currentConfig = new CameraConfiguration(0, 0, 0, Vector3.zero, 0, 60);
     }
 
 
@@ -39,17 +43,33 @@ public class CameraController : MonoBehaviour
     private void Update()
     {
 
+        ////////////////// Exercice 2 //////////////////
+        targetConfig = new CameraConfiguration(ComputeAverageYaw(), AveragePitch(), AverageRoll(), AveragePivot(), AverageDistance(), AverageFov());
+        camera.transform.rotation = targetConfig.GetRotation();
+        camera.transform.position = targetConfig.GetPosition();
+
         //////////////////// Exercice 3 ////////////////
         //CameraBlend(currentConfig);
 
-        ////////////////// Exercice 2 //////////////////
-        CameraConfiguration tempConfig = new CameraConfiguration(ComputeAverageYaw(), AveragePitch(), AverageRoll(), AveragePivot(), AverageDistance(), AverageFov());
-        camera.transform.rotation = tempConfig.GetRotation();
-        camera.transform.position = tempConfig.GetPosition();
+        if(isCutRequested)
+        {
+            targetConfig = new CameraConfiguration(ComputeAverageYaw(), AveragePitch(), AverageRoll(), AveragePivot(), AverageDistance(), AverageFov());
+            Cut();
+            isCutRequested = false;
+        }
+
     }
     private void OnDrawGizmos()
     {
-        new CameraConfiguration(ComputeAverageYaw(), AveragePitch(), AverageRoll(), AveragePivot(), AverageDistance(), AverageFov()).DrawGizmos(Color.magenta);
+        if (currentConfig != null)
+        {
+            currentConfig.DrawGizmos(Color.magenta);
+        }
+
+        if (targetConfig != null)
+        {
+            targetConfig.DrawGizmos(Color.gray);
+        }
     }
 
     public void AddView(AView view)
@@ -152,4 +172,10 @@ public class CameraController : MonoBehaviour
 
     }
 
+
+    public void Cut()
+    {
+        currentConfig = targetConfig;
+        ApplyConfiguration(camera, currentConfig);
+    }
 }

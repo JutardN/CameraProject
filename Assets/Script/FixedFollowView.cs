@@ -28,52 +28,36 @@ public class FixedFollowView : AView
     }
 
 
-    public bool CheckYawOffset()
+    public float GetClampedYaw()
     {
         float CentralYaw = this.GetCentralYaw();
         float targetYaw = this.GetYaw();
-        if (targetYaw > 180) targetYaw = -180 + (targetYaw - 180);
-        else if (targetYaw < -180) targetYaw = -(-180 + (targetYaw - 180));
+        float deltaYaw = targetYaw - CentralYaw;
+        while (deltaYaw > 180) deltaYaw -= 360;
+        while (deltaYaw < -180) deltaYaw += 360;
 
-        if (CentralYaw > 180) CentralYaw = -180 + (CentralYaw - 180);
-        else if (CentralYaw < -180) CentralYaw = -(-180 + (CentralYaw - 180));
+        deltaYaw = Mathf.Clamp(deltaYaw, -yawOffsetMax, yawOffsetMax);
 
-        if (Mathf.Abs(CentralYaw - targetYaw) > yawOffsetMax)
-        {
-            return false;
-        }
-        else return true;
+        float finalYaw = CentralYaw + deltaYaw;
+
+        return finalYaw;
     }
 
-    public bool CheckPitchOffset()
+    public float GetClampedPitch()
     {
         float CentralPitch = this.GetCentralPitch();
         float targetPitch = this.GetPitch();
-        
+        float deltaPitch = targetPitch - CentralPitch;
 
-        if (Mathf.Abs(CentralPitch - targetPitch) > pitchOffsetMax)
-        {
-            return false;
-        }
-        else return true;
+        deltaPitch = Mathf.Clamp(deltaPitch, -pitchOffsetMax, pitchOffsetMax);
+
+        float finalPitch = CentralPitch + deltaPitch;
+
+        return finalPitch;
     }
 
     public override CameraConfiguration GetConfiguration()
     {
-        if(CheckYawOffset())
-        {
-            if (CheckPitchOffset())
-            {
-                return new CameraConfiguration(GetYaw(), GetPitch(), roll, transform.position, 0, fov);
-            }
-            return new CameraConfiguration(GetYaw(), pitchOffsetMax, roll, transform.position, 0, fov);
-        }
-
-        if (CheckPitchOffset())
-        {
-            return new CameraConfiguration(yawOffsetMax, GetPitch(), roll, transform.position, 0, fov);
-        }
-
-        return new CameraConfiguration(yawOffsetMax, pitchOffsetMax, roll, transform.position, 0, fov);
+        return new CameraConfiguration(GetClampedYaw(), GetClampedPitch(), roll, transform.position, 0, fov);
     }
 }

@@ -76,7 +76,13 @@ public class Rail : MonoBehaviour
         Vector3 position = Vector3.zero;
         Vector3 direction = Vector3.zero;
         int i = 0;
-        distance = distance % length;
+        if (isLoop)
+        {
+            distance = distance % length;
+        } else
+        {
+            distance = Mathf.Clamp(distance, 0, length);
+        }
 
         while (i < nodes.Count - 1 && !found)
         {
