@@ -7,6 +7,11 @@ public class ViewVolumeBlender : MonoBehaviour
     public List<AViewVolume> activeViewVolumes;
     Dictionary<AView, List<AViewVolume>> volumesPerViews = new Dictionary<AView, List<AViewVolume>>();
     public static ViewVolumeBlender instance = null;
+
+    List<int> priorities = new List<int>();
+    Dictionary<int, List<int>> weightSumPerPriority = new Dictionary<int, List<int>>();
+    Dictionary<int, List<int>> maxWeightPerPriority = new Dictionary<int, List<int>>();
+
     private void Awake()
     {
         if (instance == null)
@@ -22,27 +27,44 @@ public class ViewVolumeBlender : MonoBehaviour
 
     public void Update()
     {
-        int maxPriority = 0;
-        for(int i = 0; i < activeViewVolumes.Count; i++)
+        foreach (AView view in volumesPerViews.Keys)
         {
-            if(activeViewVolumes[i].priority < maxPriority)
+            view.weight = 0;
+        }
+
+        int maxPriority = 0;
+        for (int i = 0; i < activeViewVolumes.Count; i++)
+        {
+            if (activeViewVolumes[i].priority > maxPriority)
+            {
+                maxPriority = activeViewVolumes[i].priority;
+            }
+        }
+
+        for (int i = 0; i < activeViewVolumes.Count; i++)
+        {
+            if (activeViewVolumes[i].priority < maxPriority)
             {
                 activeViewVolumes[i].view.weight = 0;
             }
             else
             {
                 activeViewVolumes[i].view.weight = Mathf.Max(activeViewVolumes[i].view.weight, activeViewVolumes[i].ComputeSelfWeight());
-                maxPriority = activeViewVolumes[i].priority;
             }
         }
+
+        for (int i = 0; i < activeViewVolumes.Count; i++)
+        {
+            //int sum = activeViewVolumes[i].GetSelf
+        }
     }
+
     public void AddVolume(AViewVolume view)
     {
-        
+
         activeViewVolumes.Add(view);
-        if(!volumesPerViews.ContainsKey(view.view))
+        if (!volumesPerViews.ContainsKey(view.view))
         {
-            Debug.Log("et là ?");
             List<AViewVolume> viewList = new List<AViewVolume>();
             viewList.Add(view);
             volumesPerViews.Add(view.view, viewList);

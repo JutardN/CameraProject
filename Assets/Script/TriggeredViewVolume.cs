@@ -9,10 +9,8 @@ public class TriggeredViewVolume : AViewVolume
     public string tagTarget = "Target";
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("taper");
         if(other.CompareTag("Target"))
         {
-            Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             SetActive(true);
         } 
     }

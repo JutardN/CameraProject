@@ -22,7 +22,6 @@ public abstract class AView : MonoBehaviour
 
     public void SetActive(bool isActive)
     {
-        Debug.Log("tu rentres ?");
         if (isActive)
         {
             CameraController.instance.AddView(this);

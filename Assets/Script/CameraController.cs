@@ -7,8 +7,8 @@ public class CameraController : MonoBehaviour
     public Camera camera;
     public static CameraController instance = null;
     public List<AView> activeViews;
-    public CameraConfiguration currentConfig;
-    public CameraConfiguration targetConfig;
+    CameraConfiguration currentConfig;
+    CameraConfiguration targetConfig;
     public float speed;
 
 
@@ -30,7 +30,8 @@ public class CameraController : MonoBehaviour
     }
     private void Start()
     {
-        currentConfig = new CameraConfiguration(0, 0, 0, Vector3.zero, 0, 60);
+        currentConfig = new CameraConfiguration(0, 90, 0, Vector3.zero, 0, 60);
+        targetConfig = new CameraConfiguration(0, 90, 0, Vector3.zero, 0, 60);
     }
 
 
@@ -45,13 +46,15 @@ public class CameraController : MonoBehaviour
 
         ////////////////// Exercice 2 //////////////////
         targetConfig = new CameraConfiguration(ComputeAverageYaw(), AveragePitch(), AverageRoll(), AveragePivot(), AverageDistance(), AverageFov());
+        //Debug.Log(targetConfig.pivot);
         camera.transform.rotation = targetConfig.GetRotation();
         camera.transform.position = targetConfig.GetPosition();
+        //Debug.Log(currentConfig.pivot);
 
         //////////////////// Exercice 3 ////////////////
         //CameraBlend(currentConfig);
 
-        if(isCutRequested)
+        if (isCutRequested)
         {
             targetConfig = new CameraConfiguration(ComputeAverageYaw(), AveragePitch(), AverageRoll(), AveragePivot(), AverageDistance(), AverageFov());
             Cut();
@@ -88,6 +91,10 @@ public class CameraController : MonoBehaviour
             sum += new Vector2(Mathf.Cos(config.GetConfiguration().yaw * Mathf.Deg2Rad),
             Mathf.Sin(config.GetConfiguration().yaw * Mathf.Deg2Rad)) * config.weight;
         }
+        if (activeViews.Count == 0)
+        {
+            return 0;
+        }
         return Vector2.SignedAngle(Vector2.right, sum);
     }
 
@@ -99,6 +106,10 @@ public class CameraController : MonoBehaviour
         {
             pitch += config.GetConfiguration().pitch * config.weight;
             weight += config.weight;
+        }
+        if (activeViews.Count == 0)
+        {
+            return 90;
         }
         return pitch / weight;
     }
@@ -112,6 +123,10 @@ public class CameraController : MonoBehaviour
             roll += config.GetConfiguration().roll * config.weight;
             weight += config.weight;
         }
+        if (activeViews.Count == 0)
+        {
+            return 0;
+        }
         return roll / weight;
     }
 
@@ -123,6 +138,10 @@ public class CameraController : MonoBehaviour
         {
             pivot += (config.GetConfiguration().pivot) * config.weight;
             weight += config.weight;
+        }
+        if (activeViews.Count == 0)
+        {
+            return Vector3.zero;
         }
         return pivot / weight;
     }
@@ -136,6 +155,10 @@ public class CameraController : MonoBehaviour
             distance += config.GetConfiguration().distance * config.weight;
             weight += config.weight;
         }
+        if (activeViews.Count == 0)
+        {
+            return 0;
+        }
         return distance / weight;
     }
 
@@ -147,6 +170,10 @@ public class CameraController : MonoBehaviour
         {
             fov += config.GetConfiguration().fov * config.weight;
             weight += config.weight;
+        }
+        if (activeViews.Count == 0)
+        {
+            return 90;
         }
         return fov / weight;
     }
@@ -167,11 +194,8 @@ public class CameraController : MonoBehaviour
         {
             blendConfiguration = targetConfig;
         }
-
         ApplyConfiguration(camera, blendConfiguration);
-
     }
-
 
     public void Cut()
     {

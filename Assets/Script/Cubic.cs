@@ -5,11 +5,11 @@ using UnityEngine;
 public class Cubic : MonoBehaviour
 {
     public Vector3 A, B, C, D;
-    Vector3 GetPosition(float t)
+    public Vector3 GetPosition(float t)
     {
         return MathUtils.CubicBezier(A, B, C, D, t);
     }
-    Vector3 GetPosition(float t, Matrix4x4 localToWorldMatrix)
+    public Vector3 GetPosition(float t, Matrix4x4 localToWorldMatrix)
     {
 
         return localToWorldMatrix.MultiplyPoint(GetPosition(t));
